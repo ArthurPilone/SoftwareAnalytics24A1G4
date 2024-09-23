@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(os.path.abspath('')).absolute()))
 
-from .parsers import parse_datetime_str
+from parsers import parse_datetime_str
 
 
 class Issue:

@@ -15,11 +15,12 @@ from pathlib import Path
 sys.path.append(str(Path(os.path.abspath('')).absolute()))
 
 import argparse
+import pandas as pd
 from tqdm import tqdm
 from dotenv import load_dotenv
 from github import Github, Auth, BadCredentialsException
 
-from.issue import Issue
+from issue import Issue
 
 load_dotenv()
 
@@ -50,12 +51,6 @@ def parse_args():
 	                        action='store',
 	                        required=True,
 	                        help='Path to output file')
-	arg_parser.add_argument(
-	    "-t",
-	    "--translate",
-	    action='store_true',
-	    required=False,
-	    help='If set, translates collected issues to english')
 	arg_parser.add_argument("-l",
 	                        "--label",
 	                        action='store',
@@ -74,11 +69,10 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 
 	def __init__(  #pylint: disable=too-many-arguments
 	        self, project_origin: str, persistency_path: str,
-	        repository_namespace: str, translate: bool, label: str):
+	        repository_namespace: str, label: str):
 		self.project_origin = project_origin
 		self.persistency_path = persistency_path
 		self.repository_namespace = repository_namespace
-		self.translate = translate
 		self.label = label
 		super().__init__()
 
@@ -110,11 +104,8 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 		else:
 			collected_issues = repo.get_issues(state="all")
 
-		new_repo = IssueRepository(self.project_origin, self.persistency_path)
-		print("Parsing", end=" ")
-		if self.translate:
-			print("and translating", end=" ")
-		print("collected issues.\nThis might take a few minutes")
+		issues_as_dicts = []
+		print("Parsing collected issues.\nThis might take a few minutes")
 
 		for issue in tqdm(collected_issues):
 			# print(vars(issue))
@@ -123,9 +114,10 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 			                  issue.title,
 			                  creation_time=issue.created_at,
 			                  completion_time=issue.closed_at)
-			new_repo.add_issue(new_issue, warn_duplicates=True)
+			
+			issues_as_dicts.append(new_issue.to_dict())
 
-		return new_repo
+		return pd.DataFrame.from_dict(issues_as_dicts)
 
 
 def main():
@@ -139,9 +131,9 @@ def main():
 
 	resulting_issues = collector.collect_issues()
 
-	print(len(resulting_issues.get_issues()), "issues collected")
+	print(len(resulting_issues), "issues collected")
 
-	resulting_issues.save()
+	resulting_issues.to_csv(args.output, compression='gzip', index=False)
 
 
 if __name__ == "__main__":
