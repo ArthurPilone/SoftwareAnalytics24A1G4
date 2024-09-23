@@ -18,10 +18,8 @@ import argparse
 from tqdm import tqdm
 from dotenv import load_dotenv
 from github import Github, Auth, BadCredentialsException
-from deeperMatcher.src.issues.issue import Issue
-from deeperMatcher.src.issues.issue_collector import IssueCollector
-from deeperMatcher.src.issues.issue_repository import IssueRepository
-from deeperMatcher.src.utils.translator import TextTranslator
+
+from.issue import Issue
 
 load_dotenv()
 
@@ -69,7 +67,7 @@ def parse_args():
 	return args
 
 
-class GitHubCrawler(IssueCollector):  # pylint: disable=too-few-public-methods
+class GitHubCrawler():  # pylint: disable=too-few-public-methods
 	"""
 		Scraper issues from a GitHub repository
 	"""
@@ -84,12 +82,10 @@ class GitHubCrawler(IssueCollector):  # pylint: disable=too-few-public-methods
 		self.label = label
 		super().__init__()
 
-	def collect_issues(self) -> IssueRepository:
+	def collect_issues(self):
 		"""
-			Returns an IssueRepository with the issues scraped
+			Returns an issue repository with the issues scraped
 		"""
-
-		translator = TextTranslator()
 
 		print("Connecting to GitHub")
 		# using an access token
@@ -123,20 +119,10 @@ class GitHubCrawler(IssueCollector):  # pylint: disable=too-few-public-methods
 		for issue in tqdm(collected_issues):
 			# print(vars(issue))
 
-			if self.translate:
-				new_title = translator.translate_to_english(issue.title)
-				extra_data = {} if new_title == issue.title else {
-				    "old_title": issue.title
-				}
-			else:
-				new_title = issue.title
-				extra_data = {}
-
 			new_issue = Issue(str(issue.number),
-			                  new_title,
+			                  issue.title,
 			                  creation_time=issue.created_at,
-			                  completion_time=issue.closed_at,
-			                  extra_data=extra_data)
+			                  completion_time=issue.closed_at)
 			new_repo.add_issue(new_issue, warn_duplicates=True)
 
 		return new_repo
