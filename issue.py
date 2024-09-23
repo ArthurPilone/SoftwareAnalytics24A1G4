@@ -7,11 +7,10 @@ import os
 import ast
 from datetime import datetime
 from pathlib import Path
-import pickle
 
 sys.path.append(str(Path(os.path.abspath('')).absolute()))
 
-from deeperMatcher.src.utils.parsers import parse_datetime_str
+from .parsers import parse_datetime_str
 
 
 class Issue:
