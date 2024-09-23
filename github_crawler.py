@@ -104,15 +104,18 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 		else:
 			collected_issues = repo.get_issues(state="all")
 
+		print(collected_issues[0].assignee)
+
 		issues_as_dicts = []
 		print("Parsing collected issues.\nThis might take a few minutes")
 
-		for issue in tqdm(collected_issues):
+		for issue in tqdm(collected_issues[:1000]):
 			# print(vars(issue))
 
 			new_issue = Issue(str(issue.number),
 							  issue.assignee,
 			                  issue.title,
+							  body=issue.body,
 			                  creation_time=issue.created_at,
 			                  completion_time=issue.closed_at)
 			

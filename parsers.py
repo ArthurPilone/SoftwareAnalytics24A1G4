@@ -24,6 +24,16 @@ GITHUB_DATE_FORMAT = "%Y-%m-%d %H:%M:%S%:z"
 # 	except TypeError:
 # 		return False
 
+def is_it_nan(val):
+	"""
+	Parses a given value and decides whether it is a NaN value
+	"""
+
+	try:
+		return np.isnan(val)
+	except TypeError:
+		return False
+
 
 def parse_datetime_str(date_str: str):
 	"""

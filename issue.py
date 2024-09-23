@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(os.path.abspath('')).absolute()))
 
-from parsers import parse_datetime_str
+from parsers import parse_datetime_str, is_it_nan
 
 
 class Issue:
@@ -51,8 +51,8 @@ class Issue:
 			Creates a new Issue object from a python dictionary
 		"""
 
-		new_id, new_summary, assignee = "", "", ""
-		creation_time, completion_time, embedding = None, None, None
+		new_id, new_summary, assignee = "", "", None
+		creation_time, completion_time = None, None
 		body = ""
 		remaining_data = {}
 
@@ -91,17 +91,15 @@ class Issue:
 		if new_summary == "":
 			raise ValueError(
 			    "Tried to create issue from dict with no 'title'/'summary' key")
-		if assignee == "":
-			raise ValueError(
-			    "Tried to create issue from dict with no assignee key")
 
 		new_issue = Issue(new_id,
+						  assignee,
 		                  new_summary,
 		                  body=body,
 		                  creation_time=creation_time,
 		                  completion_time=completion_time,
 		                  extra_data=remaining_data,
-		                  assignee=assignee)
+		                  )
 
 		return new_issue
 
