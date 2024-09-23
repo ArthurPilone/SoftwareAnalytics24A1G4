@@ -111,6 +111,7 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 			# print(vars(issue))
 
 			new_issue = Issue(str(issue.number),
+							  issue.assignee,
 			                  issue.title,
 			                  creation_time=issue.created_at,
 			                  completion_time=issue.closed_at)
@@ -126,8 +127,8 @@ def main():
 	"""
 	args = parse_args()
 
-	collector = GitHubCrawler(args.name, args.output, args.project,
-	                          args.translate, args.label)
+	collector = GitHubCrawler(args.name, args.output, args.project
+	                          , args.label)
 
 	resulting_issues = collector.collect_issues()
 
