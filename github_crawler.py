@@ -110,6 +110,10 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 		for issue in tqdm(collected_issues[:1000]):
 			# print(vars(issue))
 
+			# Don't save pull requests as issues
+			if issue.pull_request is not None:
+				continue
+
 			author = issue.assignee
 			if author is not None:
 				author = author.login
