@@ -11,9 +11,9 @@ sample_dataset = pd.read_csv(DATA_FILE_PATH, compression='gzip', lineterminator=
 
 The dataset is read into a list of dictionaries using to_dict('records') and then processed.
 
-## Commit Count by Author
+## Number of times as an Assignee
 
-During the dataset loading, the number of issues assigned to each author is recorded in a dictionary "commit_no_by_author" to filter out authors with too few commits later on.
+During data loading, the number of times each author is assigned as an Assignee is recorded in a dictionary, which will later be used to filter out authors who have been assigned as an Assignee too few times (less than or equal to once).
 
 ## Pre-Processing Functions
 
@@ -136,7 +136,7 @@ recent_issues_training_dataset = apply_steps_to_dataset([filter_recent_issues_tr
 test_dataset = apply_steps_to_dataset([filter_test_dataset], clean_dataset)
 ```
 
-The apply_steps_to_dataset function iterates over each issue in the dataset and applies the provided list of processing functions sequentially.
+The apply_steps_to_dataset function iterates over each issue in the dataset and applies the provided list of pre_processing functions sequentially.
 
 ## Saving Processed Datasets
 
@@ -156,5 +156,3 @@ The processed datasets are saved to the following paths:
 	•	test.csv.gzip: Test set
 
 This concludes the pre-processing steps for the dataset. Each step ensures that only the relevant, clean data is used for training and testing machine learning models.
-
-Let me know if you need further modifications!
