@@ -22,6 +22,7 @@ from github import Github, Auth, BadCredentialsException
 
 from issue import Issue
 
+#Load environment variables to access the GitHub personal authentication token, which is required for API requests.
 load_dotenv()
 
 ISSUES_PER_PAGE = 100
@@ -33,6 +34,8 @@ REQUEST_TIMEOUT = 120  #in seconds
 def parse_args():
 	'''
    	    Parses command line arguments
+   	    Requires the user to specify several arguments, in order to configure the crawler for targeting specific repositories and issue categories.
+   	    Example: python github_crawler.py -n "VSCode" -o "teste.csv.gzip" -p microsoft/vscode
    	'''
 	arg_parser = argparse.ArgumentParser()
 
@@ -82,7 +85,7 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 		"""
 
 		print("Connecting to GitHub")
-		# using an access token
+		# use an access token and authenticate the connection to GitHub
 		auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
 
 		# Public Web Github
@@ -110,7 +113,7 @@ class GitHubCrawler():  # pylint: disable=too-few-public-methods
 		for issue in tqdm(collected_issues[:1000]):
 			# print(vars(issue))
 
-			# Don't save pull requests as issues
+			# Exclude pull requests from the final dataset by checking if issue.pull_request is None.
 			if issue.pull_request is not None:
 				continue
 
